@@ -18,6 +18,9 @@ export default function App() {
   const [screen, setScreen] = useState('menu'); 
   const [category, setCategory] = useState('alphabet');
   const [mode, setMode] = useState('game');
+  
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isAppLoading, setIsAppLoading] = useState(true); 
 
   const [dialog, setDialog] = useState({
     isOpen: false,
@@ -54,16 +57,22 @@ export default function App() {
   }, [screen]);
   
   useEffect(() => {
-    const fetchWordsFromCloud = async () => {
+    const initApp = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "customWords"));
+        const fetchPromise = getDocs(collection(db, "customWords"));
+        const timerPromise = new Promise(resolve => setTimeout(resolve, 2000));
+        
+        const [querySnapshot] = await Promise.all([fetchPromise, timerPromise]);
+        
         const wordsArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         if (wordsArray.length > 0) setCustomWords(wordsArray);
       } catch (error) {
         console.error("Ошибка при скачивании слов из Firebase:", error);
+      } finally {
+        setIsAppLoading(false);
       }
     };
-    fetchWordsFromCloud();
+    initApp();
   }, []);
 
   useEffect(() => {
@@ -338,14 +347,21 @@ export default function App() {
 
   const handleDeleteWord = (idToDelete) => {
     showConfirm("Вы точно хотите удалить это слово из своего словаря?", async () => {
+      setIsDeleting(true); 
       try {
         await deleteDoc(doc(db, 'customWords', idToDelete));
         setCustomWords(prevWords => prevWords.filter(w => w.id !== idToDelete));
+        
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        closeDialog();
         setScreen('menu'); 
       } catch (error) {
         console.error("Ошибка при удалении: ", error);
         closeDialog(); 
         setScreen('error');
+      } finally {
+        setIsDeleting(false);
       }
     });
   };
@@ -397,8 +413,34 @@ export default function App() {
     return item.plain.toLowerCase().includes(q) || item.nikud.toLowerCase().includes(q) || item.ru.toLowerCase().includes(q) || item.en.toLowerCase().includes(q) || item.fr.toLowerCase().includes(q);
   });
 
+  if (isAppLoading) {
+    return (
+      <div className="loading-overlay" style={{ position: 'fixed', zIndex: 9999, background: '#f8fafc', opacity: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100vw' }}>
+        <div className="ulpan-loader" style={{ transform: 'scale(1.5)', marginBottom: '40px' }}>
+          <div className="loader-owl">🦉</div>
+          <div className="loader-school">🏫</div>
+          <div className="loader-road"></div>
+        </div>
+        <h1 style={{ color: 'var(--color-primary)', fontSize: '32px', margin: '0 0 10px 0' }}>UlpanLearn</h1>
+        <div className="loading-text" style={{ color: '#64748b' }}>Загружаем твои слова...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="container" onClick={unlockAudio}>
+      
+      {isDeleting && (
+        <div className="loading-overlay" style={{ zIndex: 10000 }}>
+          <div className="ulpan-loader">
+            <div className="loader-owl">🦉</div>
+            <div className="loader-school">🏫</div>
+            <div className="loader-road"></div>
+          </div>
+          <div className="loading-text">Удаляем слово...</div>
+        </div>
+      )}
+
       <Header lang={lang} setLang={setLang} setScreen={setScreen} />
 
       {screen === 'menu' && (
