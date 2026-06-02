@@ -106,14 +106,25 @@ export default function MenuScreen({
           </div>
         )}
 
-        <div className="wide-card action-btn" onClick={openAddWord}>
+        <div 
+          className="wide-card action-btn" 
+          onClick={(e) => {
+            e.preventDefault();
+            setTimeout(() => openAddWord(), 150);
+          }}
+        >
           <i className="fa-solid fa-plus-circle"></i> 
           <span>{t.addWordBtn}</span>
         </div>
 
         <div 
           className={`wide-card ${wrongWords.length === 0 ? 'folder-disabled' : 'folder-active'}`} 
-          onClick={() => startGame('review')}
+          onClick={(e) => {
+            e.preventDefault();
+            if (wrongWords.length > 0) {
+              setTimeout(() => startGame('review'), 150);
+            }
+          }}
         >
           <i className="fa-solid fa-folder-open"></i> 
           <span>
@@ -123,10 +134,13 @@ export default function MenuScreen({
         
         <div 
           className="wide-card library-btn" 
-          onClick={() => { 
+          onClick={(e) => {
+            e.preventDefault();
             setLibCategory('alphabet'); 
             setSearchQuery(''); 
-            setScreen('library'); 
+            setTimeout(() => {
+              setScreen('library'); 
+            }, 150);
           }}
         >
           <i className="fa-solid fa-book-open"></i> 
