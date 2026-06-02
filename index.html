@@ -16,6 +16,16 @@
     
     <title>UlpanLearn</title>
 
+    <script>
+      window.pwaInstallPrompt = null;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        window.pwaInstallPrompt = e;
+        console.log("⚡ ГЛОБАЛЬНАЯ ЛОВУШКА: Событие установки поймано!");
+        window.dispatchEvent(new Event('pwa-ready'));
+      });
+    </script>
+
     <style>
       body {
         margin: 0;

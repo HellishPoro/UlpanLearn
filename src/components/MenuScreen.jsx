@@ -9,32 +9,36 @@ export default function MenuScreen({
   setSearchQuery, 
   setScreen
 }) {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [deferredPrompt, setDeferredPrompt] = useState(window.pwaInstallPrompt);
 
   useEffect(() => {
-    const handleBeforeInstallPrompt = (e) => {
-      // Предотвращаем стандартное системное окно
-      e.preventDefault(); 
-      // ЛОГИРУЕМ! Если это появится в консоли, значит браузер дает добро на установку
-      console.log("🎯 БРАУЗЕР РАЗРЕШИЛ УСТАНОВКУ! Событие поймано."); 
-      // Сохраняем событие, чтобы вызвать его по клику на нашу зеленую кнопку
+    if (window.pwaInstallPrompt) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDeferredPrompt(window.pwaInstallPrompt);
+    }
+
+    const handleReady = () => setDeferredPrompt(window.pwaInstallPrompt);
+    window.addEventListener('pwa-ready', handleReady);
+
+    const handleStandard = (e) => {
+      e.preventDefault();
+      window.pwaInstallPrompt = e;
       setDeferredPrompt(e);
     };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('beforeinstallprompt', handleStandard);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('pwa-ready', handleReady);
+      window.removeEventListener('beforeinstallprompt', handleStandard);
     };
   }, []);
 
   const handleInstallClick = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        console.log('Пользователь установил приложение');
-      }
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      window.pwaInstallPrompt = null;
       setDeferredPrompt(null);
     }
   };
