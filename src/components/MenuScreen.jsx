@@ -13,8 +13,12 @@ export default function MenuScreen({
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
+      // Предотвращаем стандартное системное окно
       e.preventDefault(); 
-      setDeferredPrompt(e); 
+      // ЛОГИРУЕМ! Если это появится в консоли, значит браузер дает добро на установку
+      console.log("🎯 БРАУЗЕР РАЗРЕШИЛ УСТАНОВКУ! Событие поймано."); 
+      // Сохраняем событие, чтобы вызвать его по клику на нашу зеленую кнопку
+      setDeferredPrompt(e);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
