@@ -33,7 +33,7 @@ export default function App() {
   
   const [customWords, setCustomWords] = useState(() => JSON.parse(localStorage.getItem('ulpan_custom_words')) || []);
   const [weights, setWeights] = useState(() => JSON.parse(localStorage.getItem('ulpan_weights')) || {});
-  const [wrongWords, setWrongWords] = useState([]);
+  const [wrongWords, setWrongWords] = useState(() => JSON.parse(localStorage.getItem('ulpan_wrong_items')) || []);
   
   const [gameHistory, setGameHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -55,6 +55,10 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [screen]);
+
+  useEffect(()=>{
+    localStorage.setItem('ulpan_wrong_items', JSON.stringify(wrongWords))
+  },[wrongWords])
   
   useEffect(() => {
     const initApp = async () => {
