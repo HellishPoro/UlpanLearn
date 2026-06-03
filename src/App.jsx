@@ -52,8 +52,6 @@ export default function App() {
   const showLock = (message) => setDialog({ isOpen: true, type: 'lock', message, onConfirm: null });
   const closeDialog = () => setDialog(prev => ({ ...prev, isOpen: false }));
 
-  const [tgUser, setTgUser] = useState(null);
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [screen]);
@@ -63,20 +61,10 @@ export default function App() {
   },[wrongWords])
   
   useEffect(() => {
-    // 2. Проверяем, запущено ли приложение внутри Telegram
     if (window.Telegram && window.Telegram.WebApp) {
       const tg = window.Telegram.WebApp;
-      
-      tg.ready();  // Сообщаем ТГ, что приложение готово
-      tg.expand(); // Растягиваем на весь экран
-
-      // Вытаскиваем данные пользователя
-      const user = tg.initDataUnsafe?.user;
-      if (user) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setTgUser(user);
-        console.log("Пользователь ТГ:", user); // Посмотрим в консоль на структуру данных
-      }
+      tg.ready(); 
+      tg.expand(); 
     }
   }, []);
 
@@ -464,19 +452,6 @@ export default function App() {
           <div className="loading-text">Удаляем слово...</div>
         </div>
       )}
-
-      {/* Пример вывода на главном экране: */}
-      <div className="main-screen">
-        <h2 style={{ textAlign: 'center', marginTop: '20px' }}>
-          {tgUser ? `Привет, ${tgUser.first_name}! 👋` : 'Привет! 👋'}
-        </h2>
-        
-        <h1 className="main-title" style={{ textAlign: 'center', fontSize: '24px', fontWeight: 'bold' }}>
-          Что будем изучать?
-        </h1>
-
-        {/* Твоя сетка с кнопками (Алфавит, Числа, Фразы и т.д.) */}
-      </div>
 
       <Header lang={lang} setLang={setLang} setScreen={setScreen} />
 
