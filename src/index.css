@@ -205,7 +205,7 @@ h2 {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03); 
 }
 
-.flashcard { padding: 40px 20px; min-height: 240px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; user-select: none; }
+.flashcard { margin-bottom: 15px; padding: 40px 20px; min-height: 240px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; user-select: none; }
 .task-label { font-size: 14px; font-weight: 700; color: var(--color-secondary); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
 .hebrew-word { font-size: 48px; font-weight: 700; color: #111; direction: rtl; transition: font-size 0.3s; }
 
@@ -345,7 +345,10 @@ h2 {
   .menu-card i { font-size: 28px; margin-bottom: 8px; }
   .menu-card h3 { font-size: 0.95rem; }
   
-  .flashcard { padding: 30px 15px; }
+  .flashcard { 
+    padding: 30px 15px;
+    margin-bottom: 15px;
+  }
   .hebrew-word { font-size: 40px; }
   .typing-area input { font-size: 20px; padding: 12px; }
   
